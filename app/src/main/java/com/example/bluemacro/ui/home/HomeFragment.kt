@@ -6,22 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.bluemacro.databinding.FragmentHomeBinding
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.bluemacro.model.MyBluetoothManager
+import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.R
+import com.example.bluemacro.bluetooth.GlobalPermissionRequester
 
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var bluetoothManager: MyBluetoothManager
+    private lateinit var bluetoothManager: BluetoothConnectionManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +29,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        bluetoothManager = MyBluetoothManager(requireActivity())
+        bluetoothManager = BluetoothConnectionManager(requireContext(), GlobalPermissionRequester(requireActivity()))
 
         bluetoothManager.registerBluetoothConnectionReceiver()
         bluetoothManager.updateConnectedDevicesList()
@@ -125,3 +123,4 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
+

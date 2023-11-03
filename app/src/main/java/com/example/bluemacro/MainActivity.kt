@@ -2,10 +2,6 @@ package com.example.bluemacro
 
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -15,23 +11,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bluemacro.bluetooth.connection.BluetoothService
 import com.example.bluemacro.databinding.ActivityMainBinding
-import com.example.bluemacro.model.MyBluetoothManager
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-
-
-    lateinit var statusBluetooth: TextView
-    lateinit var paired: TextView
-    lateinit var on_btn: Button
-    lateinit var off_btn: Button
-    lateinit var discoverable_btn: Button
-    lateinit var paired_btn: Button
-    lateinit var bluetooth_img: ImageView
-    lateinit var bluetoothManager: MyBluetoothManager
+    private lateinit var bluetoothService: BluetoothService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,6 +26,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
+
+        bluetoothService = BluetoothService.getInstance()
+        bluetoothService.initializeBluetoothService(this)
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)

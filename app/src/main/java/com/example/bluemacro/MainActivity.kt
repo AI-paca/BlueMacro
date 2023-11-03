@@ -11,14 +11,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.example.bluemacro.bluetooth.connection.BluetoothService
+import com.example.bluemacro.bluetooth.GlobalPermissionRequester
+import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var bluetoothService: BluetoothService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,8 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        bluetoothService = BluetoothService.getInstance()
-        bluetoothService.initializeBluetoothService(this)
+        val bluetoothConnectionManager = BluetoothConnectionManager.getInstance(this, GlobalPermissionRequester(this))
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)

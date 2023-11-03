@@ -14,6 +14,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.bluemacro.bluetooth.PermissionRequester
 class BluetoothConnectionManager(private val context: Context, private val permissionRequester: PermissionRequester) {
+    companion object {
+        @Volatile
+        private var INSTANCE: BluetoothConnectionManager? = null
+
+        fun getInstance(
+            context: Context,
+            permissionRequester: PermissionRequester
+        ): BluetoothConnectionManager {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: BluetoothConnectionManager(
+                    context,
+                    permissionRequester
+                ).also { INSTANCE = it }
+            }
+        }
+    }
     private var REQUEST_CODE_ENABLE_BLUETOOTH = 1
     private var REQUEST_CODE_MAKE_DISCOVERABLE = 2
     var bluetoothAdapter: BluetoothAdapter

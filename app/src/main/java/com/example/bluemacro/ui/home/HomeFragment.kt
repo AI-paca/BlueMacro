@@ -13,7 +13,6 @@ import android.widget.Toast
 import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.R
 import com.example.bluemacro.bluetooth.GlobalPermissionRequester
-import com.example.bluemacro.bluetooth.connection.BluetoothService
 
 
 class HomeFragment : Fragment() {

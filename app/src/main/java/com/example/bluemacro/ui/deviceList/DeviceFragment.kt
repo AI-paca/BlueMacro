@@ -77,12 +77,19 @@ class DeviceFragment : Fragment(), BluetoothEvent {
     }
 
     override fun onButtonPress() {
+        changeBackgroundRandomly()
         binding.switch1.text = "fgd";
-        if (!binding.switch1.isChecked) {
+        if (binding.switch1.isChecked) {
             binding.switch1.text = "ggggg";
         }
     }
 
+
+    fun changeBackgroundRandomly() {
+        val random = java.util.Random()
+        val color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))
+        binding.root.setBackgroundColor(color)
+    }
 
 
     override fun onResume() {

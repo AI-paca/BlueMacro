@@ -146,6 +146,7 @@ class BluetoothConnectionManager(private val context: Context, private val permi
     }
 //управление device
 
+
 }
 
 

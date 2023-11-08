@@ -27,6 +27,7 @@ class DeviceFragment : Fragment(), BluetoothEvent {
     private var _binding: FragmentDeviceBinding? = null
 
 
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -55,16 +56,13 @@ class DeviceFragment : Fragment(), BluetoothEvent {
             textView.text = it
         }
 
-        val intent = Intent(requireContext(), BluetoothEventService::class.java)
-        intent.action = Intent.ACTION_MEDIA_BUTTON
-        val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY)
-        intent.putExtra(Intent.EXTRA_KEY_EVENT, keyEvent)
+        val intent = Intent(context, BluetoothEventService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireContext().startForegroundService(intent)
             Log.d("BluetoothEventService", "called")
-            requireActivity().startForegroundService(intent)
         } else {
+            requireContext().startService(intent)
             Log.d("BluetoothEventService", "called")
-            requireActivity().startService(intent)
         }
 
 

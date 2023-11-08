@@ -13,6 +13,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.os.Build
 import android.os.IBinder
+import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
@@ -20,6 +21,7 @@ class BluetoothEventService : Service() {
 
     private lateinit var bluetoothEvent: BluetoothEvent
     private val actionButtonPress = "com.example.bluemacro.ACTION_BUTTON_PRESS"
+    private lateinit var mediaSession: MediaSessionCompat
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -59,32 +61,34 @@ class BluetoothEventService : Service() {
             val notification = NotificationCompat.Builder(this, "channel_01").build()
             startForeground(1, notification)
         }
-    }
-}
 
-
-
-class BluetoothEventReceiver(private val context: Context) : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
-        Log.d("BluetoothEventReceiver", "onReceive called")
-        if (Intent.ACTION_MEDIA_BUTTON == intent.action) {
-            Log.d("BluetoothEventReceiver", "Received ACTION_MEDIA_BUTTON")
-            val serviceIntent = Intent(context, BluetoothEventService::class.java)
-            serviceIntent.action = Intent.ACTION_MEDIA_BUTTON
-            serviceIntent.putExtras(intent)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(serviceIntent)
-            } else {
-                context.startService(serviceIntent)
-            }
+        // Создание MediaSession
+        mediaSession = MediaSessionCompat(this, "BluetoothEventService").apply {
+            setCallback(object : MediaSessionCompat.Callback() {
+                override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
+                    val ke: KeyEvent? = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
+                    if (ke != null && ke.action == KeyEvent.ACTION_DOWN) {
+                        Log.d("BluetoothEventService", "Button pressed")
+                        return true
+                    }
+                    return super.onMediaButtonEvent(mediaButtonIntent)
+                }
+            })
+            setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS)
+            setMediaButtonReceiver(null)
+            isActive = true
         }
     }
-}
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaSession.release()
+    }
+}
 
 
 
 interface BluetoothEvent {
     fun onButtonPress()
 }
+

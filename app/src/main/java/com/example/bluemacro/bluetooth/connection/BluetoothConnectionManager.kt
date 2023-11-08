@@ -9,10 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.view.KeyEvent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.bluemacro.bluetooth.PermissionRequester
+import com.example.bluemacro.bluetooth.events.BluetoothEvent
+
 class BluetoothConnectionManager(private val context: Context, private val permissionRequester: PermissionRequester) {
     companion object {
         @Volatile
@@ -141,6 +144,7 @@ class BluetoothConnectionManager(private val context: Context, private val permi
         }
         context.registerReceiver(bluetoothConnectionReceiver, filter)
     }
+//управление device
 
 }
 

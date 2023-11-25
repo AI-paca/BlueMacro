@@ -77,10 +77,10 @@ class DeviceFragment : Fragment(), BluetoothEvent {
     }
 
     override fun onButtonPress() {
-        changeBackgroundRandomly()
-        binding.switch1.text = "fgd";
+        binding.switch1.text = "Not active";
         if (binding.switch1.isChecked) {
-            binding.switch1.text = "ggggg";
+            changeBackgroundRandomly()
+            binding.switch1.text = "Active";
         }
     }
 

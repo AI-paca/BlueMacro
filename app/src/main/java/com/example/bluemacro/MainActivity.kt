@@ -5,6 +5,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
+import android.view.MenuItem
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -18,6 +19,7 @@ import com.example.bluemacro.bluetooth.GlobalPermissionRequester
 import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.databinding.ActivityMainBinding
 import com.example.bluemacro.ui.deviceList.DeviceFragment
+import com.example.bluemacro.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home, R.id.nav_device,
             ), drawerLayout
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -64,6 +67,18 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

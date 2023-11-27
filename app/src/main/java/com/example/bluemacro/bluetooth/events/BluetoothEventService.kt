@@ -10,6 +10,7 @@ import android.app.Service
 import android.media.session.MediaSession
 import android.os.Build
 import android.os.IBinder
+import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
@@ -17,7 +18,7 @@ class BluetoothEventService : Service() {
 
     private lateinit var bluetoothEvent: BluetoothEvent
     private val actionButtonPress = "com.example.bluemacro.ACTION_BUTTON_PRESS"
-    private lateinit var mediaSession: MediaSession
+    private var mediaSession: MediaSessionCompat? = null
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -31,6 +32,7 @@ class BluetoothEventService : Service() {
         }
         return START_STICKY
     }
+
 
     private fun onButtonPressed(intent: Intent) {
         Log.d("BluetoothEventService", "onButtonPressed called")
@@ -60,8 +62,8 @@ class BluetoothEventService : Service() {
         }
 
         // Создание MediaSession
-        mediaSession = MediaSession(this, "BluetoothEventService").apply {
-            setCallback(object : MediaSession.Callback() {
+        mediaSession = MediaSessionCompat(this, "BluetoothEventService").apply {
+            setCallback(object : MediaSessionCompat.Callback() {
                 override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
                     val ke: KeyEvent? = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
                     if (ke != null && ke.action == KeyEvent.ACTION_DOWN) {
@@ -72,15 +74,17 @@ class BluetoothEventService : Service() {
                     return super.onMediaButtonEvent(mediaButtonIntent)
                 }
             })
-            setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS)
+            setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
             setMediaButtonReceiver(null)
             isActive = true
         }
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
-        mediaSession.release()
+        mediaSession?.release()
+        mediaSession = null
     }
 }
 

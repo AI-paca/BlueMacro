@@ -51,6 +51,7 @@ class HomeFragment : Fragment() {
         paired = root.findViewById(R.id.paired)
         deviceList = root.findViewById(R.id.device_list)
 
+
         bluetoothManager.connectedDevicesList.observe(viewLifecycleOwner) { devices ->
             if (devices.isEmpty()) {
                 deviceList.text = "No devices connected"
@@ -58,7 +59,6 @@ class HomeFragment : Fragment() {
                 deviceList.text = devices.joinToString("\n")
             }
         }
-
 
         if (!bluetoothManager.isBluetoothAvailable())
             statusBluetooth.text = "Bluetooth is unavailable"

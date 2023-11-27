@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.util.Log
 import android.view.KeyEvent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
@@ -129,13 +130,6 @@ class BluetoothConnectionManager(private val context: Context, private val permi
         return connectedDevices
     }
 
-    private val bluetoothConnectionReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (BluetoothDevice.ACTION_ACL_CONNECTED == intent.action || BluetoothDevice.ACTION_ACL_DISCONNECTED == intent.action) {
-                updateConnectedDevicesList()
-            }
-        }
-    }
 
     fun registerBluetoothConnectionReceiver() {
         val filter = IntentFilter().apply {
@@ -144,8 +138,40 @@ class BluetoothConnectionManager(private val context: Context, private val permi
         }
         context.registerReceiver(bluetoothConnectionReceiver, filter)
     }
-//управление device
+    val myDeviceName: String
+        get() {
+            checkAndRequestBluetoothPermission()
+            checkAndRequestBluetoothAdminPermission()
+            return bluetoothAdapter.name ?: "Bluetooth is off"
+        }
 
+    private val _activeDeviceName = MutableLiveData<String>()
+    val activeDeviceName: LiveData<String> = _activeDeviceName
+
+    private val bluetoothConnectionReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (BluetoothDevice.ACTION_ACL_CONNECTED == intent.action || BluetoothDevice.ACTION_ACL_DISCONNECTED == intent.action) {
+                updateConnectedDevicesList()
+                _activeDeviceName.value = getActiveDeviceName()
+                Log.d("MainActivity", "Current activeDeviceName is ${_activeDeviceName.value}")
+            }
+        }
+    }
+
+    fun getActiveDeviceName(): String {
+        checkAndRequestBluetoothPermission()
+        val pairedDevices = bluetoothAdapter.bondedDevices
+        for (device in pairedDevices) {
+            val method = device.javaClass.getMethod("isConnected")
+            val connected = method.invoke(device) as Boolean
+            Log.d("MainActivity", "activeDeviceName is ${_activeDeviceName.value}")
+            if (connected) {
+                return device.name
+            }
+        }
+
+        return "No active device"
+    }
 
 }
 

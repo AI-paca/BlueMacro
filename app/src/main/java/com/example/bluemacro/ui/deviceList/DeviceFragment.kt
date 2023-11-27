@@ -8,16 +8,15 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat.registerReceiver
-import androidx.core.content.ContextCompat.startForegroundService
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.bluemacro.bluetooth.GlobalPermissionRequester
+import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.bluetooth.events.BluetoothEvent
 import com.example.bluemacro.bluetooth.events.BluetoothEventService
 import com.example.bluemacro.databinding.FragmentDeviceBinding
@@ -25,8 +24,6 @@ import com.example.bluemacro.databinding.FragmentDeviceBinding
 class DeviceFragment : Fragment(), BluetoothEvent {
 
     private var _binding: FragmentDeviceBinding? = null
-
-
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -40,21 +37,25 @@ class DeviceFragment : Fragment(), BluetoothEvent {
             }
         }
     }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val deviceViewModel =
-            ViewModelProvider(this).get(DeviceViewModel::class.java)
+
 
         _binding = FragmentDeviceBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+
         val textView: TextView = binding.textDevice
-        deviceViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+        val bluetoothManager = BluetoothConnectionManager(requireContext(), GlobalPermissionRequester(requireActivity()))
+        bluetoothManager.activeDeviceName.observe(requireActivity(), Observer { deviceName ->
+            textView.text = deviceName ?: "Device_name"
+        })
+
 
         val intent = Intent(context, BluetoothEventService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

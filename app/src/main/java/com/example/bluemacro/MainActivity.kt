@@ -3,9 +3,11 @@ package com.example.bluemacro
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -15,6 +17,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.example.bluemacro.bluetooth.GlobalPermissionRequester
 import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.databinding.ActivityMainBinding
@@ -51,6 +55,12 @@ class MainActivity : AppCompatActivity() {
             ), drawerLayout
         )
 
+        var bluetoothManager = BluetoothConnectionManager(this, GlobalPermissionRequester(this))
+        // Имя вашего телефона
+        val headerView = navView.getHeaderView(0)
+        val myDeviceName: TextView = headerView.findViewById(R.id.my_device_name)
+        myDeviceName.text = bluetoothManager.myDeviceName
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -79,9 +89,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.d("MainActivity", "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Log.d("MainActivity", "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("MainActivity", "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("MainActivity", "onStop")
+    }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("MainActivity", "onDestroy")
     }
 
 }

@@ -69,7 +69,6 @@
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
         android:text="Bluetooth is unavalable"
-        android:textColor="@color/purple_500"
         android:textSize="26dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

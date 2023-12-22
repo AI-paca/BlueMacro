@@ -10,6 +10,8 @@ interface PermissionRequester {
     fun requestBluetoothPermission()
     fun requestBluetoothAdminPermission()
     fun requestBluetoothConnectPermission()
+    fun requestWriteSecureSettingsPermission()
+    fun requestAccessibilityPermission()
 }
 
 class GlobalPermissionRequester(private val activity: Activity) : PermissionRequester {
@@ -48,5 +50,36 @@ class GlobalPermissionRequester(private val activity: Activity) : PermissionRequ
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), REQUEST_CODE_ENABLE_BLUETOOTH)
         }
     }
+
+    private val REQUEST_CODE_ACCESSIBILITY = 3
+
+    override fun requestAccessibilityPermission() {
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.BIND_ACCESSIBILITY_SERVICE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.BIND_ACCESSIBILITY_SERVICE),
+                REQUEST_CODE_ACCESSIBILITY
+            )
+        }
+    }
+
+    override fun requestWriteSecureSettingsPermission() {
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.WRITE_SECURE_SETTINGS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.WRITE_SECURE_SETTINGS),
+                REQUEST_CODE_ACCESSIBILITY
+            )
+        }
+    }
+
 }
 

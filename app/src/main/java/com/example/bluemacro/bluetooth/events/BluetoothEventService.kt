@@ -11,6 +11,8 @@ import android.media.session.MediaSession
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+import android.support.v4.media.session.MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
@@ -19,6 +21,12 @@ class BluetoothEventService : Service() {
     private lateinit var bluetoothEvent: BluetoothEvent
     private val actionButtonPress = "com.example.bluemacro.ACTION_BUTTON_PRESS"
     private var mediaSession: MediaSessionCompat? = null
+    private val FLAG_HANDLES_TRANSPORT_CONTROLS = 200
+    private val FLAG_HANDLES_MEDIA_BUTTONS = 0
+
+    // Добавлены переменные для отслеживания состояния
+    private var isMediaSessionActive = false
+    private var isMediaSessionAddressedApp = false
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -30,9 +38,43 @@ class BluetoothEventService : Service() {
             Log.d("BluetoothEventService", "Received ACTION_MEDIA_BUTTON")
             onButtonPressed(intent)
         }
+
+        // Проверяем, существует ли MediaSession
+        mediaSession?.let {
+            // MediaSession существует, используем ее
+            it.setCallback(object : MediaSessionCompat.Callback() {
+                override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
+                    val ke: KeyEvent? = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
+                    if (ke != null && ke.action == KeyEvent.ACTION_DOWN) {
+                        Log.d("BluetoothEventService", "Button pressed")
+                        onButtonPressed(mediaButtonIntent)
+                        return true
+                    }
+                    return super.onMediaButtonEvent(mediaButtonIntent)
+                }
+            })
+
+            it.setFlags( FLAG_HANDLES_MEDIA_BUTTONS)
+            Log.d(
+                "BluetoothEventService",
+                "MediaSession isActive: $it.isActive, isAddressedApp: $isMediaSessionAddressedApp"
+            )
+
+            // Устанавливаем свою MediaSession в качестве активной, если она не является адресованной другим приложением
+            if (!isMediaSessionAddressedApp) {
+                it.isActive = true
+            }
+        } ?: {
+            // MediaSession не существует, создаем ее
+            createMediaSession()
+        }
+
+
+        // Устанавливаем флаги, позволяющие другим приложениям перехватывать события медиа-кнопок и управлять воспроизведением
+        mediaSession?.setFlags(  FLAG_HANDLES_MEDIA_BUTTONS )
+
         return START_STICKY
     }
-
 
     private fun onButtonPressed(intent: Intent) {
         Log.d("BluetoothEventService", "onButtonPressed called")
@@ -47,10 +89,30 @@ class BluetoothEventService : Service() {
         }
     }
 
+    private fun createMediaSession() {
+        if (mediaSession == null) {
+            mediaSession = MediaSessionCompat(this, "BluetoothEventService").apply {
+                setCallback(object : MediaSessionCompat.Callback() {
+                    override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
+                        val ke: KeyEvent? = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
+                        if (ke != null && ke.action == KeyEvent.ACTION_DOWN) {
+                            Log.d("BluetoothEventService", "Button pressed")
+                            onButtonPressed(mediaButtonIntent)
+                            return true
+                        }
+                        return super.onMediaButtonEvent(mediaButtonIntent)
+                    }
+                })
+                setFlags(FLAG_HANDLES_MEDIA_BUTTONS)
+                setMediaButtonReceiver(null)
+                isActive = true
+            }
+        }
+    }
+
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("BluetoothEventService", "onCreate called")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel("channel_01", "My Channel", NotificationManager.IMPORTANCE_DEFAULT)
 
@@ -60,6 +122,7 @@ class BluetoothEventService : Service() {
             val notification = NotificationCompat.Builder(this, "channel_01").build()
             startForeground(1, notification)
         }
+        Log.d("BluetoothEventService", "onCreate called")
 
         // Создание MediaSession
         mediaSession = MediaSessionCompat(this, "BluetoothEventService").apply {
@@ -74,7 +137,7 @@ class BluetoothEventService : Service() {
                     return super.onMediaButtonEvent(mediaButtonIntent)
                 }
             })
-            setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+            setFlags(FLAG_HANDLES_MEDIA_BUTTONS)
             setMediaButtonReceiver(null)
             isActive = true
         }
@@ -93,4 +156,3 @@ class BluetoothEventService : Service() {
 interface BluetoothEvent {
     fun onButtonPress()
 }
-

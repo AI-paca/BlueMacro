@@ -20,10 +20,12 @@ import com.example.bluemacro.bluetooth.connection.BluetoothConnectionManager
 import com.example.bluemacro.bluetooth.events.BluetoothEvent
 import com.example.bluemacro.bluetooth.events.BluetoothEventService
 import com.example.bluemacro.databinding.FragmentDeviceBinding
+import com.example.bluemacro.bluetooth.devices.BlueMacroAccessibilityService
 
 class DeviceFragment : Fragment(), BluetoothEvent {
 
     private var _binding: FragmentDeviceBinding? = null
+    //var accessibillity:BlueMacroAccessibilityService?=null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -58,19 +60,21 @@ class DeviceFragment : Fragment(), BluetoothEvent {
 
 
         val intent = Intent(context, BluetoothEventService::class.java)
+        val intentAccessibility = Intent(context, BlueMacroAccessibilityService::class.java)
+
+        // Запустите сервисы в фоновом режиме
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             requireContext().startForegroundService(intent)
+            requireContext().startForegroundService(intentAccessibility)
             Log.d("BluetoothEventService", "called")
         } else {
             requireContext().startService(intent)
+            requireContext().startService(intentAccessibility)
             Log.d("BluetoothEventService", "called")
         }
-
-
-
-
         return root
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -81,6 +85,8 @@ class DeviceFragment : Fragment(), BluetoothEvent {
         binding.switch1.text = "Not active";
         if (binding.switch1.isChecked) {
             changeBackgroundRandomly()
+            //accessibillity?.startLongPress(100f,100f)
+            //accessibillity?.stopLongPress()
             binding.switch1.text = "Active";
         }
     }

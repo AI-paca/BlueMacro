@@ -27,4 +27,9 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <!-- Notification -->
+    <string name="notification_title">Blue Macro Service</string>
+    <string name="notification_message">This is a notification from the Blue Macro Service.</string>
+
 </resources>

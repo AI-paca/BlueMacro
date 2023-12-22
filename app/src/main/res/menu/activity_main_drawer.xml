@@ -6,9 +6,9 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:title="home" />
+            android:title="HOME" />
         <item
             android:id="@+id/nav_device"
-            android:title="device-1" />
+            android:title="DEVICE" />
     </group>
 </menu>

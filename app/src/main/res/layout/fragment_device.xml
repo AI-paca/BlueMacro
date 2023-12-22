@@ -24,25 +24,21 @@
             android:id="@+id/switch1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="tap" />
+            android:text="Tap"
+            android:textSize="19dp"/>
 
+        <Switch
+            android:id="@+id/switch2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Change Background"
+            android:textSize="19dp"/>
         <Switch
             android:id="@+id/switch3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Double tap" />
-
-        <Switch
-            android:id="@+id/switch4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Long tap" />
-
-        <Switch
-            android:id="@+id/switch5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Switch" />
+            android:text="Block"
+            android:textSize="19dp"/>/>
     </LinearLayout>
 
     <TextView

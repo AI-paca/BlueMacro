@@ -21,6 +21,7 @@ import com.example.bluemacro.bluetooth.events.BluetoothEvent
 import com.example.bluemacro.bluetooth.events.BluetoothEventService
 import com.example.bluemacro.databinding.FragmentDeviceBinding
 import com.example.bluemacro.bluetooth.devices.BlueMacroAccessibilityService
+import com.example.bluemacro.R
 
 class DeviceFragment : Fragment(), BluetoothEvent {
 
@@ -58,6 +59,8 @@ class DeviceFragment : Fragment(), BluetoothEvent {
             textView.text = deviceName ?: "Device_name"
         })
 
+        // Создаем MediaPlayer
+        val clickSoundUri = resources.getIdentifier("click_sound", "mp3", "raw")
 
         val intent = Intent(context, BluetoothEventService::class.java)
         val intentAccessibility = Intent(context, BlueMacroAccessibilityService::class.java)
@@ -82,14 +85,26 @@ class DeviceFragment : Fragment(), BluetoothEvent {
     }
 
     override fun onButtonPress() {
-        binding.switch1.text = "Not active";
+        binding.switch1.text = "Not active"
         if (binding.switch1.isChecked) {
             changeBackgroundRandomly()
-            //accessibillity?.startLongPress(100f,100f)
-            //accessibillity?.stopLongPress()
-            binding.switch1.text = "Active";
+            Intent("START_LONG_PRESS").also { intent ->
+                intent.putExtra("x", 100f)
+                intent.putExtra("y", 100f)
+                requireContext().sendBroadcast(intent)
+                Log.d(
+                    "BlueMacroAccessibilityService",
+                    "sendBroadcast"
+                )
+            }
+            Intent("STOP_LONG_PRESS").also { intent ->
+                requireContext().sendBroadcast(intent)
+            }
+            binding.switch1.text = "Active"
         }
     }
+    // Получите корневой View Activity
+    val rootView = view
 
 
     fun changeBackgroundRandomly() {

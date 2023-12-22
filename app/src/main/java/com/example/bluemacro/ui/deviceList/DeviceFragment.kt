@@ -85,8 +85,7 @@ class DeviceFragment : Fragment(), BluetoothEvent {
     }
 
     override fun onButtonPress() {
-        binding.switch1.text = "Not active"
-        if (binding.switch1.isChecked) {
+        if (binding.switch2.isChecked) {
             changeBackgroundRandomly()
             Intent("START_LONG_PRESS").also { intent ->
                 intent.putExtra("x", 100f)
@@ -100,7 +99,7 @@ class DeviceFragment : Fragment(), BluetoothEvent {
             Intent("STOP_LONG_PRESS").also { intent ->
                 requireContext().sendBroadcast(intent)
             }
-            binding.switch1.text = "Active"
+            binding.switch2.text = "Active"
         }
     }
     // Получите корневой View Activity
